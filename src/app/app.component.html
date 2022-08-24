@@ -1,0 +1,108 @@
+<!-- now the first directive we need to add is here on the form itself via property binding, formgroup directive, and it tells angular take my formgroup, dont infer one, dont create a form for me,  -->
+
+<div class="container">
+  <div class="row">
+    <!--  -->
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <!--  -->
+      <!-- here its telling that my form should be connected to the form stored in the signup form property -->
+      <!-- we still add ngsubmit here to submit the form and will pass the method -->
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+        <!-- here inside this we will pass nested formgorup name and we need to place them in separate divs means all grouped ones -->
+        <div formGroupName="userData">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <!-- and here we need to add formcontrolname, to tell angular whats the  name of this input in  my TS form, here username is defined in ts file ion formcontrolname
+            -->
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              class="form-control"
+            />
+            <!-- get method allow us to get controls easily, and in that we can either specify the control name, so this gives us access to this username control and now valid holds whether this control is valid and now valid holds whether this control is valid or not -->
+            <!-- we can specify path in get method also, because we might have a nested form. lets say username and email should be inside a formgroup -->
+            <!-- <span
+              *ngIf="
+                !signupForm.get('username').valid &&
+                signupForm.get('username').touched
+              "
+              class="help-block"
+              >Please enter a valid username!</span
+            > -->
+            <span
+              *ngIf="
+                !signupForm.get('userData.username').valid &&
+                signupForm.get('userData.username').touched
+              "
+              class="help-block"
+            >
+              <span
+                *ngIf="
+                  signupForm.get('userData.username').errors['nameIsForbidden']
+                "
+                >This name is invalid</span
+              >
+              <span
+                *ngIf="signupForm.get('userData.username').errors['required']"
+                >Please enter a valid username!</span
+              >
+            </span>
+          </div>
+          <!--  -->
+          <div class="form-group">
+            <label for="email">email</label>
+            <input
+              type="text"
+              id="email"
+              formControlName="email"
+              class="form-control"
+            />
+            <span
+              *ngIf="
+                !signupForm.get('userData.email').valid &&
+                signupForm.get('userData.email').touched
+              "
+              class="help-block"
+              >Please enter a valid email!</span
+            >
+          </div>
+        </div>
+
+        <!--  -->
+        <div class="radio" *ngFor="let gender of genders">
+          <label>
+            <input type="radio" formControlName="gender" [value]="gender" />{{
+              gender
+            }}
+          </label>
+        </div>
+        <!-- so on the outer directive we will add directive formarraygroup so that it can be synchrozied with the html code, hobbies is the name in TS object -->
+        <div formArrayName="hobbies">
+          <!-- in this div, we want to allow the user to dynamically add form controls -->
+          <h4>Your Hobbies</h4>
+          <button class="btn btn-default" type="button" (click)="onAddHobby()">
+            Add Hobby
+          </button>
+          <!-- for dynamic data, we need to add formcontrolname because we still need to synchronize this input with the dynamically created input, now this dynamically created input will not have a name chosen by us, but it is an array, so the name will be simplye the index in this array, so for that we need to create the property binding -->
+          <div
+            class="form-group"
+            *ngFor="
+              let hobbyControl of signupForm.get('hobbies').controls;
+              let i = index
+            "
+          >
+            <input type="text" class="form-control" [formControlName]="i" />
+          </div>
+        </div>
+        <!--  -->
+        <span *ngIf="!signupForm.valid && signupForm.touched" class="help-block"
+          >Please enter a valid data!</span
+        >
+
+        <!--  -->
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
